@@ -5,6 +5,11 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +42,11 @@ public class PracticeScrapper {
 
         List<Product> productObjs = new ArrayList<>();
         List<Product> totalObjs = new ArrayList<>();
+        File downloadsFolder = new File("C:\\CrawlingTest\\imgDownloads");
+
+        if(downloadsFolder.exists()==false){
+            downloadsFolder.mkdir();
+        }
 
         int pageNum = driver.findElement(By.className("paging")).findElements(By.tagName("li")).size();
 
@@ -70,11 +80,12 @@ public class PracticeScrapper {
         for(int i=0; i < productObjs.size(); i++) {
             driver.get("https://www.cjthemarket.com/pc/prod/prodDetail?prdCd=" + productObjs.get(i).getNum() + "&ctgrId=0018&plnId=&giftSetEvntId=");
             Thread.sleep(1500);
+
             while(true){
             try {
                 driver.findElement(By.xpath("//*[@id=\"prdInfoArea\"]/ul/li[1]/a")).click();
 
-                Thread.sleep(1000);
+                Thread.sleep(3000);
 
                 List<WebElement> allergyInfo = driver.findElement(By.className("table-default")).findElements(By.tagName("tr"));
                 String[] temp1 = allergyInfo.get(5).getText().split("\n");
@@ -86,10 +97,43 @@ public class PracticeScrapper {
                 productObjs.get(i).setIngredients(ingredient);
                 productObjs.get(i).setAllergy(allergy);
 
+                List<WebElement> imgElements = driver.findElement(By.className("product-images"))
+                        .findElement(By.className("product-images-item"))
+                        .findElements(By.tagName("img"));
+
+                Thread.sleep(1500);
+
+                for(WebElement img : imgElements){
+                    String src = img.getAttribute("src");
+
+                    if (src.contains("//img.cjthemarket.com/images/file/product/")==false){
+                        continue;
+                    }
+
+                    productObjs.get(i).setImgUrl(src);
+
+                    BufferedImage saveImage = null;
+
+                    try{
+                        saveImage = ImageIO.read(new URL(src));
+                    } catch (IOException e){
+                        e.printStackTrace();
+                    }
+
+                    if(saveImage != null) {
+                        try {
+                            ImageIO.write(saveImage, "jpg", new File("C:\\CrawlingTest\\imgDownloads\\Photo_" + productObjs.get(i).getNum() + ".jpg"));
+                        } catch (IOException e) {
+                        }
+                    }//if
+                }//for
+
                 System.out.println(productObjs.get(i));
                 break;
 
             } catch (UnhandledAlertException f) {
+                Thread.sleep(3000);
+
                 Alert alert = driver.switchTo().alert();
                 String alertText = alert.getText();
                 System.out.println("Alert data: " + alertText);
@@ -112,6 +156,7 @@ class Product {
     private String num;
     private String ingredients;
     private String allergy;
+    private String imgUrl;
 
     private static final String pageUrl = "https://www.cjthemarket.com/pc/prod/prodDetail?prdCd=&ctgrId=0018&plnId=&giftSetEvntId=";
 
