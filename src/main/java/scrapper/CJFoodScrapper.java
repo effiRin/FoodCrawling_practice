@@ -1,7 +1,8 @@
+package scrapper;
+
 import lombok.Data;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
@@ -13,7 +14,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PracticeScrapper {
+public class CJFoodScrapper {
 
     public static final String WEB_DRIVER_ID = "webdriver.chrome.driver"; // 드라이버 ID
     public static final String WEB_DRIVER_PATH = "C:\\Users\\effir\\chromedriver.exe"; // 드라이버 경로
@@ -41,7 +42,6 @@ public class PracticeScrapper {
         Thread.sleep(5000);
 
         List<Product> productObjs = new ArrayList<>();
-        List<Product> totalObjs = new ArrayList<>();
         File downloadsFolder = new File("C:\\CrawlingTest\\imgDownloads");
 
         if(downloadsFolder.exists()==false){

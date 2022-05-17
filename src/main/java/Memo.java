@@ -31,8 +31,8 @@
 //
 //        Thread.sleep(5000);
 //
-//        List<Product> productObjs = new ArrayList<>();
-//        List<Product> totalObjs = new ArrayList<>();
+//        List<Scrapper.Product> productObjs = new ArrayList<>();
+//        List<Scrapper.Product> totalObjs = new ArrayList<>();
 //        File downloadsFolder = new File("imgDownloads");
 //
 //        if(downloadsFolder.exists()==false){
